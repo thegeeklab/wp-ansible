@@ -1,21 +1,64 @@
 package plugin
 
 import (
-	"github.com/drone-plugins/drone-plugin-lib/drone"
+	wp "github.com/thegeeklab/wp-plugin-go/plugin"
+	"github.com/urfave/cli/v2"
 )
 
-// Plugin implements drone.Plugin to provide the plugin implementation.
+// Plugin implements provide the plugin.
 type Plugin struct {
-	settings Settings
-	pipeline drone.Pipeline
-	network  drone.Network
+	*wp.Plugin
+	Settings *Settings
 }
 
-// New initializes a plugin from the given Settings, Pipeline, and Network.
-func New(settings Settings, pipeline drone.Pipeline, network drone.Network) *Plugin {
-	return &Plugin{
-		settings: settings,
-		pipeline: pipeline,
-		network:  network,
+// Settings for the Plugin.
+type Settings struct {
+	Requirements      string
+	Galaxy            string
+	Inventories       cli.StringSlice
+	Playbooks         cli.StringSlice
+	Limit             string
+	SkipTags          string
+	StartAtTask       string
+	Tags              string
+	ExtraVars         cli.StringSlice
+	ModulePath        cli.StringSlice
+	Check             bool
+	Diff              bool
+	FlushCache        bool
+	ForceHandlers     bool
+	ListHosts         bool
+	ListTags          bool
+	ListTasks         bool
+	SyntaxCheck       bool
+	Forks             int
+	VaultID           string
+	VaultPassword     string
+	VaultPasswordFile string
+	Verbose           int
+	PrivateKey        string
+	PrivateKeyFile    string
+	User              string
+	Connection        string
+	Timeout           int
+	SSHCommonArgs     string
+	SFTPExtraArgs     string
+	SCPExtraArgs      string
+	SSHExtraArgs      string
+	Become            bool
+	BecomeMethod      string
+	BecomeUser        string
+}
+
+func New(options wp.Options, settings *Settings) *Plugin {
+	p := &Plugin{}
+
+	if options.Execute == nil {
+		options.Execute = p.run
 	}
+
+	p.Plugin = wp.New(options)
+	p.Settings = settings
+
+	return p
 }

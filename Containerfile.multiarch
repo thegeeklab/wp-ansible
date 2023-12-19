@@ -10,12 +10,12 @@ RUN make build
 
 FROM docker.io/python:3.12-alpine@sha256:c793b92fd9e0e2a0b611756788a033d569ca864b733461c8fb30cfd14847dbcf
 
-LABEL maintainer="ownCloud DevOps <devops@owncloud.com>"
-LABEL org.opencontainers.image.authors="ownCloud DevOps <devops@owncloud.com>"
-LABEL org.opencontainers.image.title="drone-ansible"
-LABEL org.opencontainers.image.url="https://github.com/owncloud-ci/drone-ansible"
-LABEL org.opencontainers.image.source="https://github.com/owncloud-ci/drone-ansible"
-LABEL org.opencontainers.image.documentation="https://github.com/owncloud-ci/drone-ansible"
+LABEL maintainer="Robert Kaussow <mail@thegeeklab.de>"
+LABEL org.opencontainers.image.authors="Robert Kaussow <mail@thegeeklab.de>"
+LABEL org.opencontainers.image.title="wp-ansible"
+LABEL org.opencontainers.image.url="https://github.com/thegeeklab/wp-ansible"
+LABEL org.opencontainers.image.source="https://github.com/thegeeklab/wp-ansible"
+LABEL org.opencontainers.image.documentation="https://github.com/thegeeklab/wp-ansible"
 
 ARG TARGETOS
 ARG TARGETARCH
@@ -35,5 +35,5 @@ RUN apk --update add --virtual .build-deps python3-dev libffi-dev build-base && 
     rm -rf /tmp/* && \
     rm -rf /root/.cache/
 
-COPY --from=build /src/dist/drone-ansible /bin/drone-ansible
-ENTRYPOINT ["/bin/drone-ansible"]
+COPY --from=build /src/dist/wp-ansible /bin/wp-ansible
+ENTRYPOINT ["/bin/wp-ansible"]
