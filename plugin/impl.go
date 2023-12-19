@@ -1,64 +1,39 @@
 package plugin
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"os"
 
-	"github.com/urfave/cli/v2"
 	"golang.org/x/sys/execabs"
 )
-
-// Settings for the Plugin.
-type Settings struct {
-	Requirements      string
-	Galaxy            string
-	Inventories       cli.StringSlice
-	Playbooks         cli.StringSlice
-	Limit             string
-	SkipTags          string
-	StartAtTask       string
-	Tags              string
-	ExtraVars         cli.StringSlice
-	ModulePath        cli.StringSlice
-	Check             bool
-	Diff              bool
-	FlushCache        bool
-	ForceHandlers     bool
-	ListHosts         bool
-	ListTags          bool
-	ListTasks         bool
-	SyntaxCheck       bool
-	Forks             int
-	VaultID           string
-	VaultPassword     string
-	VaultPasswordFile string
-	Verbose           int
-	PrivateKey        string
-	PrivateKeyFile    string
-	User              string
-	Connection        string
-	Timeout           int
-	SSHCommonArgs     string
-	SFTPExtraArgs     string
-	SCPExtraArgs      string
-	SSHExtraArgs      string
-	Become            bool
-	BecomeMethod      string
-	BecomeUser        string
-}
 
 var (
 	ErrPluginPlaybookNotSet  = errors.New("playbook is required")
 	ErrPluginInventoryNotSet = errors.New("inventory is required")
 )
 
+//nolint:revive
+func (p *Plugin) run(ctx context.Context) error {
+	if err := p.Validate(); err != nil {
+		return fmt.Errorf("validation failed: %w", err)
+	}
+
+	if err := p.Execute(); err != nil {
+		return fmt.Errorf("execution failed: %w", err)
+	}
+
+	return nil
+}
+
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
-	if len(p.settings.Playbooks.Value()) == 0 {
+	if len(p.Settings.Playbooks.Value()) == 0 {
 		return ErrPluginPlaybookNotSet
 	}
 
-	if len(p.settings.Inventories.Value()) == 0 {
+	if len(p.Settings.Inventories.Value()) == 0 {
 		return ErrPluginInventoryNotSet
 	}
 
@@ -75,35 +50,35 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	if p.settings.PrivateKey != "" {
+	if p.Settings.PrivateKey != "" {
 		if err := p.privateKey(); err != nil {
 			return err
 		}
 
-		defer os.Remove(p.settings.PrivateKeyFile)
+		defer os.Remove(p.Settings.PrivateKeyFile)
 	}
 
-	if p.settings.VaultPassword != "" {
+	if p.Settings.VaultPassword != "" {
 		if err := p.vaultPass(); err != nil {
 			return err
 		}
 
-		defer os.Remove(p.settings.VaultPasswordFile)
+		defer os.Remove(p.Settings.VaultPasswordFile)
 	}
 
 	commands := []*execabs.Cmd{
 		p.versionCommand(),
 	}
 
-	if p.settings.Requirements != "" {
+	if p.Settings.Requirements != "" {
 		commands = append(commands, p.requirementsCommand())
 	}
 
-	if p.settings.Galaxy != "" {
+	if p.Settings.Galaxy != "" {
 		commands = append(commands, p.galaxyCommand())
 	}
 
-	for _, inventory := range p.settings.Inventories.Value() {
+	for _, inventory := range p.Settings.Inventories.Value() {
 		commands = append(commands, p.ansibleCommand(inventory))
 	}
 

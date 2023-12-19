@@ -3,11 +3,11 @@ GOFUMPT_PACKAGE_VERSION := v0.5.0
 # renovate: datasource=github-releases depName=golangci/golangci-lint
 GOLANGCI_LINT_PACKAGE_VERSION := v1.55.2
 
-SHELL := bash
-NAME := drone-ansible
-IMPORT := github.com/owncloud-ci/$(NAME)
+EXECUTABLE := wp-ansible
+
 DIST := dist
 DIST_DIRS := $(DIST)
+IMPORT := github.com/thegeeklab/$(EXECUTABLE)
 
 GO ?= go
 CWD ?= $(shell pwd)
@@ -19,14 +19,20 @@ GOLANGCI_LINT_PACKAGE ?= github.com/golangci/golangci-lint/cmd/golangci-lint@$(G
 XGO_PACKAGE ?= src.techknowlogick.com/xgo@latest
 GOTESTSUM_PACKAGE ?= gotest.tools/gotestsum@latest
 
+GENERATE ?=
 XGO_VERSION := go-1.21.x
 XGO_TARGETS ?= linux/amd64,linux/arm64
 
+TARGETOS ?= linux
+TARGETARCH ?= amd64
+ifneq ("$(TARGETVARIANT)","")
+GOARM ?= $(subst v,,$(TARGETVARIANT))
+endif
 TAGS ?= netgo
 
 ifndef VERSION
-	ifneq ($(DRONE_TAG),)
-		VERSION ?= $(subst v,,$(DRONE_TAG))
+	ifneq ($(CI_COMMIT_TAG),)
+		VERSION ?= $(subst v,,$(CI_COMMIT_TAG))
 	else
 		VERSION ?= $(shell git rev-parse --short HEAD)
 	endif
@@ -39,12 +45,12 @@ endif
 LDFLAGS += -s -w -X "main.BuildVersion=$(VERSION)" -X "main.BuildDate=$(DATE)"
 
 .PHONY: all
-all: build
+all: clean build
 
 .PHONY: clean
 clean:
 	$(GO) clean -i ./...
-	@rm -rf $(DIST_DIRS)
+	rm -rf $(DIST_DIRS)
 
 .PHONY: fmt
 fmt:
@@ -57,28 +63,32 @@ golangci-lint:
 .PHONY: lint
 lint: golangci-lint
 
+.PHONY: generate
+generate:
+	$(GO) generate $(GENERATE)
+
 .PHONY: test
 test:
-	$(GO) run $(GOTESTSUM_PACKAGE) -- -coverprofile=coverage.out $(PACKAGES)
+	$(GO) run $(GOTESTSUM_PACKAGE) --no-color=false -- -coverprofile=coverage.out $(PACKAGES)
 
 .PHONY: build
-build: $(DIST)/$(NAME)
+build: $(DIST)/$(EXECUTABLE)
 
-$(DIST)/$(NAME): $(SOURCES)
-	$(GO) build -v -tags '$(TAGS)' -ldflags '-extldflags "-static" $(LDFLAGS)' -o $@ ./cmd/$(NAME)
+$(DIST)/$(EXECUTABLE): $(SOURCES)
+	GOOS=$(TARGETOS) GOARCH=$(TARGETARCH) GOARM=$(GOARM) $(GO) build -v -tags '$(TAGS)' -ldflags '-extldflags "-static" $(LDFLAGS)' -o $@ ./cmd/$(EXECUTABLE)
 
 $(DIST_DIRS):
-	@mkdir -p $(DIST_DIRS)
+	mkdir -p $(DIST_DIRS)
 
 .PHONY: xgo
 xgo: | $(DIST_DIRS)
-	$(GO) run $(XGO_PACKAGE) -go $(XGO_VERSION) -v -ldflags '-extldflags "-static" $(LDFLAGS)' -tags '$(TAGS)' -targets '$(XGO_TARGETS)' -out $(NAME) --pkg cmd/$(NAME) .
+	$(GO) run $(XGO_PACKAGE) -go $(XGO_VERSION) -v -ldflags '-extldflags "-static" $(LDFLAGS)' -tags '$(TAGS)' -targets '$(XGO_TARGETS)' -out $(EXECUTABLE) --pkg cmd/$(EXECUTABLE) .
 	cp /build/* $(CWD)/$(DIST)
 	ls -l $(CWD)/$(DIST)
 
 .PHONY: checksum
 checksum:
-	cd $(DIST); $(foreach file,$(wildcard $(DIST)/$(NAME)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
+	cd $(DIST); $(foreach file,$(wildcard $(DIST)/$(EXECUTABLE)-*),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 	ls -l $(CWD)/$(DIST)
 
 .PHONY: release

@@ -1,6 +1,6 @@
-/release/
-/dist/
-/drone-ansible*
+/dist
+/release
+/wp-ansible*
 
 coverage.out
 CHANGELOG.md
