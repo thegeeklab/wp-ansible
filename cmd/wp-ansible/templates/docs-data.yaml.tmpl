@@ -1,0 +1,14 @@
+---
+{{- if .GlobalArgs }}
+properties:
+{{- range $v := .GlobalArgs }}
+  - name: {{ $v.Name }}
+    {{- with $v.Description }}
+    description: |
+      {{ . }}
+    {{- end }}
+    {{- with $v.Default }}
+    defaultvalue: {{ . }}
+    {{- end }}
+{{ end -}}
+{{ end -}}

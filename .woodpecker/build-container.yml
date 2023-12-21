@@ -6,7 +6,7 @@ when:
       - ${CI_REPO_DEFAULT_BRANCH}
 
 steps:
-  dryrun:
+  - name: dryrun
     image: quay.io/thegeeklab/wp-docker-buildx:2.0.0
     settings:
       containerfile: Containerfile.multiarch
@@ -19,7 +19,7 @@ steps:
     when:
       - event: [pull_request]
 
-  publish-dockerhub:
+  - name: publish-dockerhub
     group: container
     image: quay.io/thegeeklab/wp-docker-buildx:2.0.0
     settings:
@@ -40,7 +40,7 @@ steps:
         branch:
           - ${CI_REPO_DEFAULT_BRANCH}
 
-  publish-quay:
+  - name: publish-quay
     group: container
     image: quay.io/thegeeklab/wp-docker-buildx:2.0.0
     settings:

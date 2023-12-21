@@ -117,12 +117,12 @@ func (p *Plugin) versionCommand() *execabs.Cmd {
 	)
 }
 
-func (p *Plugin) requirementsCommand() *execabs.Cmd {
+func (p *Plugin) pythonRequirementsCommand() *execabs.Cmd {
 	args := []string{
 		"install",
 		"--upgrade",
 		"--requirement",
-		p.Settings.Requirements,
+		p.Settings.PythonRequirements,
 	}
 
 	return execabs.Command(
@@ -131,12 +131,12 @@ func (p *Plugin) requirementsCommand() *execabs.Cmd {
 	)
 }
 
-func (p *Plugin) galaxyCommand() *execabs.Cmd {
+func (p *Plugin) galaxyRequirementsCommand() *execabs.Cmd {
 	args := []string{
 		"install",
 		"--force",
 		"--role-file",
-		p.Settings.Galaxy,
+		p.Settings.GalaxyRequirements,
 	}
 
 	if p.Settings.Verbose > 0 {

@@ -5,26 +5,28 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// settingsFlags has the cli.Flags for the plugin.Settings.
+// SettingsFlags has the cli.Flags for the plugin.Settings.
+//
+//go:generate go run docs.go flags.go
 func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 	return []cli.Flag{
 		&cli.StringFlag{
-			Name:        "requirements",
-			Usage:       "path to python requirements",
-			EnvVars:     []string{"PLUGIN_REQUIREMENTS"},
-			Destination: &settings.Requirements,
+			Name:        "python-requirements",
+			Usage:       "path to python requirements file",
+			EnvVars:     []string{"PLUGIN_PYTHON_REQUIREMENTS"},
+			Destination: &settings.PythonRequirements,
 			Category:    category,
 		},
 		&cli.StringFlag{
-			Name:        "galaxy",
-			Usage:       "path to galaxy requirements",
-			EnvVars:     []string{"PLUGIN_GALAXY"},
-			Destination: &settings.Galaxy,
+			Name:        "galaxy-requirements",
+			Usage:       "path to galaxy requirements file",
+			EnvVars:     []string{"PLUGIN_GALAXY_REQUIREMENTS"},
+			Destination: &settings.GalaxyRequirements,
 			Category:    category,
 		},
 		&cli.StringSliceFlag{
 			Name:        "inventory",
-			Usage:       "specify inventory host path",
+			Usage:       "path to inventory file",
 			EnvVars:     []string{"PLUGIN_INVENTORY", "PLUGIN_INVENTORIES"},
 			Destination: &settings.Inventories,
 			Category:    category,
@@ -38,7 +40,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:        "limit",
-			Usage:       "further limit selected hosts to an additional pattern",
+			Usage:       "limit selected hosts to an additional pattern",
 			EnvVars:     []string{"PLUGIN_LIMIT"},
 			Destination: &settings.Limit,
 			Category:    category,
@@ -165,7 +167,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:        "private-key",
-			Usage:       "use this key to authenticate the connection",
+			Usage:       "ssh private key used to authenticate the connection",
 			EnvVars:     []string{"PLUGIN_PRIVATE_KEY", "ANSIBLE_PRIVATE_KEY"},
 			Destination: &settings.PrivateKey,
 			Category:    category,
@@ -193,35 +195,35 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:        "ssh-common-args",
-			Usage:       "specify common arguments to pass to sftp/scp/ssh",
+			Usage:       "specify common arguments to pass to sftp,scp and ssh connections",
 			EnvVars:     []string{"PLUGIN_SSH_COMMON_ARGS"},
 			Destination: &settings.SSHCommonArgs,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "sftp-extra-args",
-			Usage:       "specify extra arguments to pass to sftp only",
+			Usage:       "specify extra arguments to pass to sftp connections only",
 			EnvVars:     []string{"PLUGIN_SFTP_EXTRA_ARGS"},
 			Destination: &settings.SFTPExtraArgs,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "scp-extra-args",
-			Usage:       "specify extra arguments to pass to scp only",
+			Usage:       "specify extra arguments to pass to scp connections only",
 			EnvVars:     []string{"PLUGIN_SCP_EXTRA_ARGS"},
 			Destination: &settings.SCPExtraArgs,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "ssh-extra-args",
-			Usage:       "specify extra arguments to pass to ssh only",
+			Usage:       "specify extra arguments to pass to ssh connections only",
 			EnvVars:     []string{"PLUGIN_SSH_EXTRA_ARGS"},
 			Destination: &settings.SSHExtraArgs,
 			Category:    category,
 		},
 		&cli.BoolFlag{
 			Name:        "become",
-			Usage:       "run operations with become",
+			Usage:       "enable privilege escalation",
 			EnvVars:     []string{"PLUGIN_BECOME"},
 			Destination: &settings.Become,
 			Category:    category,
@@ -235,7 +237,7 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.StringFlag{
 			Name:        "become-user",
-			Usage:       "run operations as this user",
+			Usage:       "privilege escalation user to use",
 			EnvVars:     []string{"PLUGIN_BECOME_USER", "ANSIBLE_BECOME_USER"},
 			Destination: &settings.BecomeUser,
 			Category:    category,
