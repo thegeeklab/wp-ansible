@@ -42,6 +42,7 @@ steps:
       - event: [push, manual]
         branch:
           - ${CI_REPO_DEFAULT_BRANCH}
+        status: [success, failure]
 
   - name: pushrm-dockerhub
     image: docker.io/chko/docker-pushrm:1
