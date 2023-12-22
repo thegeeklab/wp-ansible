@@ -1,0 +1,145 @@
+---
+properties:
+  - name: become
+    description: |
+      Enable privilege escalation.
+    defaultvalue: false
+
+  - name: become_method
+    description: |
+      Privilege escalation method to use.
+
+  - name: become_user
+    description: |
+      Privilege escalation user to use.
+
+  - name: check
+    description: |
+      Run a check, do not apply any changes.
+    defaultvalue: false
+
+  - name: connection
+    description: |
+      Connection type to use.
+
+  - name: diff
+    description: |
+      Show the differences. Be careful when using it in public CI environments as it can print secrets.
+    defaultvalue: false
+
+  - name: extra_vars
+    description: |
+      Set additional variables as `key=value`.
+
+  - name: flush_cache
+    description: |
+      Clear the fact cache for every host in inventory.
+    defaultvalue: false
+
+  - name: force_handlers
+    description: |
+      Run handlers even if a task fails.
+    defaultvalue: false
+
+  - name: forks
+    description: |
+      Specify number of parallel processes to use.
+    defaultvalue: 5
+
+  - name: galaxy_requirements
+    description: |
+      Path to galaxy requirements file.
+
+  - name: inventory
+    description: |
+      Path to inventory file.
+
+  - name: limit
+    description: |
+      Limit selected hosts to an additional pattern.
+
+  - name: list_hosts
+    description: |
+      Outputs a list of matching hosts.
+    defaultvalue: false
+
+  - name: list_tags
+    description: |
+      List all available tags.
+    defaultvalue: false
+
+  - name: list_tasks
+    description: |
+      List all tasks that would be executed.
+    defaultvalue: false
+
+  - name: module_path
+    description: |
+      Prepend paths to module library.
+
+  - name: playbook
+    description: |
+      List of playbooks to apply.
+
+  - name: private_key
+    description: |
+      SSH private key used to authenticate the connection.
+
+  - name: python_requirements
+    description: |
+      Path to python requirements file.
+
+  - name: scp_extra_args
+    description: |
+      Specify extra arguments to pass to SCP connections only.
+
+  - name: sftp_extra_args
+    description: |
+      Specify extra arguments to pass to SFTP connections only.
+
+  - name: skip_tags
+    description: |
+      Only run plays and tasks whose tags do not match.
+
+  - name: ssh_common_args
+    description: |
+      Specify common arguments to pass to SFTP, SCP and SSH connections.
+
+  - name: ssh_extra_args
+    description: |
+      Specify extra arguments to pass to ssh connections only.
+
+  - name: start_at_task
+    description: |
+      Start the playbook at the task matching this name.
+
+  - name: syntax_check
+    description: |
+      Perform a syntax check on the playbook.
+    defaultvalue: false
+
+  - name: tags
+    description: |
+      Only run plays and tasks tagged with these values.
+
+  - name: timeout
+    description: |
+      Override the connection timeout in seconds.
+    defaultvalue: 0
+
+  - name: user
+    description: |
+      Connect as this user.
+
+  - name: vault_id
+    description: |
+      The vault identity to use.
+
+  - name: vault_password
+    description: |
+      The vault password to use.
+
+  - name: verbose
+    description: |
+      Level of verbosity, 0 up to 4.
+    defaultvalue: 0
