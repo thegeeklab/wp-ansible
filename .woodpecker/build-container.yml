@@ -20,8 +20,8 @@ steps:
       - event: [pull_request]
 
   - name: publish-dockerhub
-    group: container
     image: quay.io/thegeeklab/wp-docker-buildx:2.0.0
+    group: container
     settings:
       auto_tag: true
       containerfile: Containerfile.multiarch
@@ -41,8 +41,8 @@ steps:
           - ${CI_REPO_DEFAULT_BRANCH}
 
   - name: publish-quay
-    group: container
     image: quay.io/thegeeklab/wp-docker-buildx:2.0.0
+    group: container
     settings:
       auto_tag: true
       containerfile: Containerfile.multiarch
