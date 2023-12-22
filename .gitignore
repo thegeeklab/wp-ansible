@@ -1,6 +1,7 @@
 /dist
 /release
 /wp-ansible*
+docs/data/data-raw.yaml
 
 coverage.out
 CHANGELOG.md

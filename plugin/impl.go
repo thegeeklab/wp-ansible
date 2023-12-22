@@ -70,12 +70,12 @@ func (p *Plugin) Execute() error {
 		p.versionCommand(),
 	}
 
-	if p.Settings.Requirements != "" {
-		commands = append(commands, p.requirementsCommand())
+	if p.Settings.PythonRequirements != "" {
+		commands = append(commands, p.pythonRequirementsCommand())
 	}
 
-	if p.Settings.Galaxy != "" {
-		commands = append(commands, p.galaxyCommand())
+	if p.Settings.GalaxyRequirements != "" {
+		commands = append(commands, p.galaxyRequirementsCommand())
 	}
 
 	for _, inventory := range p.Settings.Inventories.Value() {

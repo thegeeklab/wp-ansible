@@ -13,41 +13,41 @@ type Plugin struct {
 
 // Settings for the Plugin.
 type Settings struct {
-	Requirements      string
-	Galaxy            string
-	Inventories       cli.StringSlice
-	Playbooks         cli.StringSlice
-	Limit             string
-	SkipTags          string
-	StartAtTask       string
-	Tags              string
-	ExtraVars         cli.StringSlice
-	ModulePath        cli.StringSlice
-	Check             bool
-	Diff              bool
-	FlushCache        bool
-	ForceHandlers     bool
-	ListHosts         bool
-	ListTags          bool
-	ListTasks         bool
-	SyntaxCheck       bool
-	Forks             int
-	VaultID           string
-	VaultPassword     string
-	VaultPasswordFile string
-	Verbose           int
-	PrivateKey        string
-	PrivateKeyFile    string
-	User              string
-	Connection        string
-	Timeout           int
-	SSHCommonArgs     string
-	SFTPExtraArgs     string
-	SCPExtraArgs      string
-	SSHExtraArgs      string
-	Become            bool
-	BecomeMethod      string
-	BecomeUser        string
+	PythonRequirements string
+	GalaxyRequirements string
+	Inventories        cli.StringSlice
+	Playbooks          cli.StringSlice
+	Limit              string
+	SkipTags           string
+	StartAtTask        string
+	Tags               string
+	ExtraVars          cli.StringSlice
+	ModulePath         cli.StringSlice
+	Check              bool
+	Diff               bool
+	FlushCache         bool
+	ForceHandlers      bool
+	ListHosts          bool
+	ListTags           bool
+	ListTasks          bool
+	SyntaxCheck        bool
+	Forks              int
+	VaultID            string
+	VaultPassword      string
+	VaultPasswordFile  string
+	Verbose            int
+	PrivateKey         string
+	PrivateKeyFile     string
+	User               string
+	Connection         string
+	Timeout            int
+	SSHCommonArgs      string
+	SFTPExtraArgs      string
+	SCPExtraArgs       string
+	SSHExtraArgs       string
+	Become             bool
+	BecomeMethod       string
+	BecomeUser         string
 }
 
 func New(options wp.Options, settings *Settings) *Plugin {
