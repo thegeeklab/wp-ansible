@@ -13,6 +13,7 @@ import (
 	"github.com/thegeeklab/wp-ansible/plugin"
 	"github.com/thegeeklab/wp-plugin-go/docs"
 	wp "github.com/thegeeklab/wp-plugin-go/plugin"
+	wp_template "github.com/thegeeklab/wp-plugin-go/template"
 	"github.com/urfave/cli/v2"
 )
 
@@ -43,7 +44,7 @@ func main() {
 func toYAML(app *cli.App) (string, error) {
 	var w bytes.Buffer
 
-	yamlTmpl, err := template.New("docs").ParseFS(yamlTemplate, "templates/docs-data.yaml.tmpl")
+	yamlTmpl, err := template.New("docs").Funcs(wp_template.LoadFuncMap()).ParseFS(yamlTemplate, "templates/docs-data.yaml.tmpl")
 	if err != nil {
 		fmt.Println(yamlTmpl)
 		return "", err
