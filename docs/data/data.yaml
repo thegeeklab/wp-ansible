@@ -4,7 +4,7 @@ properties:
     description: |
       Enable privilege escalation.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: become_method
@@ -23,7 +23,7 @@ properties:
     description: |
       Run a check, do not apply any changes.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: connection
@@ -36,7 +36,7 @@ properties:
     description: |
       Show the differences. Be careful when using it in public CI environments as it can print secrets.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: extra_vars
@@ -49,21 +49,21 @@ properties:
     description: |
       Clear the fact cache for every host in inventory.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: force_handlers
     description: |
       Run handlers even if a task fails.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: forks
     description: |
       Specify number of parallel processes to use.
     type: integer
-    defaultvalue: 5
+    defaultValue: 5
     required: false
 
   - name: galaxy_requirements
@@ -88,21 +88,21 @@ properties:
     description: |
       Outputs a list of matching hosts.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: list_tags
     description: |
       List all available tags.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: list_tasks
     description: |
       List all tasks that would be executed.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: module_path
@@ -169,7 +169,7 @@ properties:
     description: |
       Perform a syntax check on the playbook.
     type: bool
-    defaultvalue: false
+    defaultValue: false
     required: false
 
   - name: tags
@@ -182,7 +182,7 @@ properties:
     description: |
       Override the connection timeout in seconds.
     type: integer
-    defaultvalue: 0
+    defaultValue: 0
     required: false
 
   - name: user
@@ -207,5 +207,5 @@ properties:
     description: |
       Level of verbosity, 0 up to 4.
     type: integer
-    defaultvalue: 0
+    defaultValue: 0
     required: false
