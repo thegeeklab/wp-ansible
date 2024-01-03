@@ -290,7 +290,3 @@ func (p *Plugin) ansibleCommand(inventory string) *execabs.Cmd {
 		args...,
 	)
 }
-
-func trace(cmd *execabs.Cmd) {
-	fmt.Println("$", strings.Join(cmd.Args, " "))
-}

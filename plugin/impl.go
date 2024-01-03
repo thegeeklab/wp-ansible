@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/thegeeklab/wp-plugin-go/trace"
 	"golang.org/x/sys/execabs"
 )
 
@@ -89,7 +90,7 @@ func (p *Plugin) Execute() error {
 		cmd.Env = os.Environ()
 		cmd.Env = append(cmd.Env, "ANSIBLE_FORCE_COLOR=1")
 
-		trace(cmd)
+		trace.Cmd(cmd)
 
 		if err := cmd.Run(); err != nil {
 			return err
