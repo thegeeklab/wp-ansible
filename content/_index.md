@@ -8,7 +8,7 @@ title: wp-ansible
 [![Go Report Card](https://goreportcard.com/badge/github.com/thegeeklab/wp-ansible)](https://goreportcard.com/report/github.com/thegeeklab/wp-ansible)
 [![GitHub contributors](https://img.shields.io/github/contributors/thegeeklab/wp-ansible)](https://github.com/thegeeklab/wp-ansible/graphs/contributors)
 [![Source: GitHub](https://img.shields.io/badge/source-github-blue.svg?logo=github&logoColor=white)](https://github.com/thegeeklab/wp-ansible)
-[![License: MIT](https://img.shields.io/github/license/thegeeklab/wp-ansible)](https://github.com/thegeeklab/wp-ansible/blob/main/LICENSE)
+[![License: Apache-2.0](https://img.shields.io/github/license/thegeeklab/wp-ansible)](https://github.com/thegeeklab/wp-ansible/blob/main/LICENSE)
 
 Woodpecker CI plugin to manage infrastructure with [Ansible](https://github.com/ansible/ansible).
 
