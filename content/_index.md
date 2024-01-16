@@ -26,7 +26,7 @@ name: default
 
 steps:
   - name: ansible
-    image: quay.io/thegeeklab/drone-ansible
+    image: quay.io/thegeeklab/wp-ansible
     settings:
       playbook: deployment/playbook.yml
       private_key:
