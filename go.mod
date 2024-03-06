@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/thegeeklab/wp-plugin-go v1.6.0
 	github.com/urfave/cli/v2 v2.27.1
-	golang.org/x/sys v0.17.0
+	golang.org/x/sys v0.18.0
 )
 
 require (
