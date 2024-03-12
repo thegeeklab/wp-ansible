@@ -21,9 +21,6 @@ Woodpecker CI plugin to manage infrastructure with [Ansible](https://github.com/
 ## Usage
 
 ```YAML
-kind: pipeline
-name: default
-
 steps:
   - name: ansible
     image: quay.io/thegeeklab/wp-ansible
@@ -59,5 +56,10 @@ docker build --file Containerfile.multiarch --tag thegeeklab/wp-ansible .
 ## Test
 
 ```Shell
-
+docker run --rm \
+  -e PLUGIN_PLAYBOOK=deployment/playbook.yml \
+  -e PLUGIN_SYNTAX_CHECK=true \
+  -v $(pwd):/build:z \
+  -w /build \
+  thegeeklab/wp-ansible
 ```
