@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os"
 
@@ -10,13 +9,7 @@ import (
 	"golang.org/x/sys/execabs"
 )
 
-var (
-	ErrPluginPlaybookNotSet  = errors.New("playbook is required")
-	ErrPluginInventoryNotSet = errors.New("inventory is required")
-)
-
-//nolint:revive
-func (p *Plugin) run(ctx context.Context) error {
+func (p *Plugin) run(_ context.Context) error {
 	if err := p.Validate(); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
 	}
@@ -30,14 +23,6 @@ func (p *Plugin) run(ctx context.Context) error {
 
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
-	if len(p.Settings.Playbooks.Value()) == 0 {
-		return ErrPluginPlaybookNotSet
-	}
-
-	if len(p.Settings.Inventories.Value()) == 0 {
-		return ErrPluginInventoryNotSet
-	}
-
 	return nil
 }
 

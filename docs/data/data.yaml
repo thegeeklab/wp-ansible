@@ -76,7 +76,7 @@ properties:
     description: |
       Path to inventory file.
     type: list
-    required: false
+    required: true
 
   - name: limit
     description: |
@@ -115,7 +115,7 @@ properties:
     description: |
       List of playbooks to apply.
     type: list
-    required: false
+    required: true
 
   - name: private_key
     description: |
