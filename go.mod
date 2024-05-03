@@ -3,7 +3,7 @@ module github.com/thegeeklab/wp-ansible
 go 1.22
 
 require (
-	github.com/thegeeklab/wp-plugin-go v1.7.1
+	github.com/thegeeklab/wp-plugin-go v1.8.0
 	github.com/urfave/cli/v2 v2.27.2
 	golang.org/x/sys v0.19.0
 )
