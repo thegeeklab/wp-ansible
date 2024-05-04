@@ -1,6 +1,8 @@
 package plugin
 
 import (
+	"fmt"
+
 	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
 	"github.com/urfave/cli/v2"
 )
@@ -69,7 +71,7 @@ func New(e wp.ExecuteFunc, build ...string) *Plugin {
 	}
 
 	if len(build) > 1 {
-		options.VersionMetadata = build[1]
+		options.VersionMetadata = fmt.Sprintf("date=%s", build[1])
 	}
 
 	if e == nil {
