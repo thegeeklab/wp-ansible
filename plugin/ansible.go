@@ -121,21 +121,20 @@ func (p *Plugin) getPlaybooks() error {
 	return nil
 }
 
-func (p *Plugin) versionCommand() *execabs.Cmd {
+func (p *Plugin) versionCommand() *Cmd {
 	args := []string{
 		"--version",
 	}
 
-	return execabs.Command(
-		ansibleBin,
-		args...,
-	)
+	return &Cmd{
+		Cmd: execabs.Command(ansibleBin, args...),
+	}
 }
 
 // pythonRequirementsCommand returns an execabs.Cmd that runs the pip install
 // command with the specified Python requirements file and upgrades any existing
 // packages.
-func (p *Plugin) pythonRequirementsCommand() *execabs.Cmd {
+func (p *Plugin) pythonRequirementsCommand() *Cmd {
 	args := []string{
 		"install",
 		"--upgrade",
@@ -143,15 +142,14 @@ func (p *Plugin) pythonRequirementsCommand() *execabs.Cmd {
 		p.Settings.PythonRequirements,
 	}
 
-	return execabs.Command(
-		pipBin,
-		args...,
-	)
+	return &Cmd{
+		Cmd: execabs.Command(pipBin, args...),
+	}
 }
 
 // galaxyRequirementsCommand returns an execabs.Cmd that runs the Ansible Galaxy
 // install command with the specified role file and verbosity level.
-func (p *Plugin) galaxyRequirementsCommand() *execabs.Cmd {
+func (p *Plugin) galaxyRequirementsCommand() *Cmd {
 	args := []string{
 		"install",
 		"--force",
@@ -163,15 +161,14 @@ func (p *Plugin) galaxyRequirementsCommand() *execabs.Cmd {
 		args = append(args, fmt.Sprintf("-%s", strings.Repeat("v", p.Settings.Verbose)))
 	}
 
-	return execabs.Command(
-		ansibleGalaxyBin,
-		args...,
-	)
+	return &Cmd{
+		Cmd: execabs.Command(ansibleGalaxyBin, args...),
+	}
 }
 
 // ansibleCommand returns an execabs.Cmd that runs the Ansible playbook with the
 // specified inventory file and various configuration options set on the Plugin struct.
-func (p *Plugin) ansibleCommand(inventory string) *execabs.Cmd {
+func (p *Plugin) ansibleCommand(inventory string) *Cmd {
 	args := []string{
 		"--inventory",
 		inventory,
@@ -197,20 +194,18 @@ func (p *Plugin) ansibleCommand(inventory string) *execabs.Cmd {
 		args = append(args, "--list-hosts")
 		args = append(args, p.Settings.Playbooks.Value()...)
 
-		return execabs.Command(
-			ansiblePlaybookBin,
-			args...,
-		)
+		return &Cmd{
+			Cmd: execabs.Command(ansiblePlaybookBin, args...),
+		}
 	}
 
 	if p.Settings.SyntaxCheck {
 		args = append(args, "--syntax-check")
 		args = append(args, p.Settings.Playbooks.Value()...)
 
-		return execabs.Command(
-			ansiblePlaybookBin,
-			args...,
-		)
+		return &Cmd{
+			Cmd: execabs.Command(ansiblePlaybookBin, args...),
+		}
 	}
 
 	if p.Settings.Check {
@@ -307,8 +302,8 @@ func (p *Plugin) ansibleCommand(inventory string) *execabs.Cmd {
 
 	args = append(args, p.Settings.Playbooks.Value()...)
 
-	return execabs.Command(
-		ansiblePlaybookBin,
-		args...,
-	)
+	return &Cmd{
+		Cmd:     execabs.Command(ansiblePlaybookBin, args...),
+		Private: false,
+	}
 }

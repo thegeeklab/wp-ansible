@@ -5,6 +5,7 @@ import (
 
 	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
 	"github.com/urfave/cli/v2"
+	"golang.org/x/sys/execabs"
 )
 
 //go:generate go run ../internal/docs/main.go -output=../docs/data/data-raw.yaml
@@ -52,6 +53,11 @@ type Settings struct {
 	Become             bool
 	BecomeMethod       string
 	BecomeUser         string
+}
+
+type Cmd struct {
+	*execabs.Cmd
+	Private bool
 }
 
 func New(e wp.ExecuteFunc, build ...string) *Plugin {
