@@ -69,6 +69,7 @@ func New(e wp.ExecuteFunc, build ...string) *Plugin {
 		Name:                "wp-ansible",
 		Description:         "Manage infrastructure with Ansible",
 		Flags:               Flags(p.Settings, wp.FlagsPluginCategory),
+		Execute:             p.run,
 		HideWoodpeckerFlags: true,
 	}
 
@@ -80,8 +81,8 @@ func New(e wp.ExecuteFunc, build ...string) *Plugin {
 		options.VersionMetadata = fmt.Sprintf("date=%s", build[1])
 	}
 
-	if e == nil {
-		options.Execute = p.run
+	if e != nil {
+		options.Execute = e
 	}
 
 	p.Plugin = wp.New(options)
