@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/rs/zerolog/log"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/sys/execabs"
 )
@@ -31,8 +32,11 @@ const ansibleContent = `
 host_key_checking = False
 `
 
-var ErrAnsiblePlaybookNotFound = errors.New("playbook not found")
+var ErrAnsiblePlaybookNotFound = errors.New("no playbook found")
 
+// ansibleConfig creates the Ansible configuration directory and file.
+// It ensures the directory exists and writes the Ansible configuration
+// content to the config file with strict file permissions.
 func (p *Plugin) ansibleConfig() error {
 	if err := os.MkdirAll(ansibleFolder, os.ModePerm); err != nil {
 		return fmt.Errorf("failed to create ansible directory: %w", err)
@@ -45,6 +49,9 @@ func (p *Plugin) ansibleConfig() error {
 	return nil
 }
 
+// privateKey creates a temporary file containing the private key specified in the plugin settings,
+// and sets the PrivateKeyFile field in the plugin settings to the name of the temporary file.
+// This is used to pass the private key to the Ansible command.
 func (p *Plugin) privateKey() error {
 	tmpfile, err := os.CreateTemp("", "privateKey")
 	if err != nil {
@@ -64,6 +71,9 @@ func (p *Plugin) privateKey() error {
 	return nil
 }
 
+// vaultPass creates a temporary file containing the vault password and sets the VaultPasswordFile
+// field in the Plugin's Settings. This allows the vault password to be used when running
+// Ansible commands that require it.
 func (p *Plugin) vaultPass() error {
 	tmpfile, err := os.CreateTemp("", "vaultPass")
 	if err != nil {
@@ -83,13 +93,16 @@ func (p *Plugin) vaultPass() error {
 	return nil
 }
 
-func (p *Plugin) playbooks() error {
+// getPlaybooks retrieves a list of playbook files based on the configured playbook patterns.
+// If any of the patterns fail to match any files, the original pattern is included in the list.
+// If no playbooks are found, ErrAnsiblePlaybookNotFound is returned.
+func (p *Plugin) getPlaybooks() error {
 	var playbooks []string
 
-	for _, p := range p.Settings.Playbooks.Value() {
-		files, err := filepath.Glob(p)
+	for _, pb := range p.Settings.Playbooks.Value() {
+		files, err := filepath.Glob(pb)
 		if err != nil {
-			playbooks = append(playbooks, p)
+			playbooks = append(playbooks, pb)
 
 			continue
 		}
@@ -98,6 +111,8 @@ func (p *Plugin) playbooks() error {
 	}
 
 	if len(playbooks) == 0 {
+		log.Debug().Strs("patterns", p.Settings.Playbooks.Value()).Msg("no playbooks found")
+
 		return ErrAnsiblePlaybookNotFound
 	}
 
@@ -117,6 +132,9 @@ func (p *Plugin) versionCommand() *execabs.Cmd {
 	)
 }
 
+// pythonRequirementsCommand returns an execabs.Cmd that runs the pip install
+// command with the specified Python requirements file and upgrades any existing
+// packages.
 func (p *Plugin) pythonRequirementsCommand() *execabs.Cmd {
 	args := []string{
 		"install",
@@ -131,6 +149,8 @@ func (p *Plugin) pythonRequirementsCommand() *execabs.Cmd {
 	)
 }
 
+// galaxyRequirementsCommand returns an execabs.Cmd that runs the Ansible Galaxy
+// install command with the specified role file and verbosity level.
 func (p *Plugin) galaxyRequirementsCommand() *execabs.Cmd {
 	args := []string{
 		"install",
@@ -149,6 +169,8 @@ func (p *Plugin) galaxyRequirementsCommand() *execabs.Cmd {
 	)
 }
 
+// ansibleCommand returns an execabs.Cmd that runs the Ansible playbook with the
+// specified inventory file and various configuration options set on the Plugin struct.
 func (p *Plugin) ansibleCommand(inventory string) *execabs.Cmd {
 	args := []string{
 		"--inventory",

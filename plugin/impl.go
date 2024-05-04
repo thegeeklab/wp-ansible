@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/trace"
+	"github.com/thegeeklab/wp-plugin-go/v2/trace"
 	"golang.org/x/sys/execabs"
 )
 
@@ -28,7 +28,7 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	if err := p.playbooks(); err != nil {
+	if err := p.getPlaybooks(); err != nil {
 		return err
 	}
 
