@@ -29,6 +29,7 @@ steps:
       private_key:
         from_secret: ansible_private_key
       inventory: deployment/hosts.yml
+      syntax_check: true
 ```
 
 ### Parameters
@@ -57,9 +58,10 @@ docker build --file Containerfile.multiarch --tag thegeeklab/wp-ansible .
 
 ```Shell
 docker run --rm \
-  -e PLUGIN_PLAYBOOK=deployment/playbook.yml \
+  -e PLUGIN_PLAYBOOK=playbook.yml \
+  -e PLUGIN_INVENTORY=inventory.yml \
   -e PLUGIN_SYNTAX_CHECK=true \
-  -v $(pwd):/build:z \
+  -v $(pwd)/testdata:/build:z \
   -w /build \
   thegeeklab/wp-ansible
 ```

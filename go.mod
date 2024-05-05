@@ -3,7 +3,9 @@ module github.com/thegeeklab/wp-ansible
 go 1.22
 
 require (
-	github.com/thegeeklab/wp-plugin-go v1.7.1
+	github.com/rs/zerolog v1.32.0
+	github.com/thegeeklab/wp-plugin-go v1.8.0
+	github.com/thegeeklab/wp-plugin-go/v2 v2.0.0
 	github.com/urfave/cli/v2 v2.27.2
 	golang.org/x/sys v0.19.0
 )
@@ -21,7 +23,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
-	github.com/rs/zerolog v1.32.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

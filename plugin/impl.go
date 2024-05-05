@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/trace"
-	"golang.org/x/sys/execabs"
+	"github.com/thegeeklab/wp-plugin-go/v2/trace"
 )
 
 func (p *Plugin) run(_ context.Context) error {
@@ -28,7 +27,10 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	if err := p.playbooks(); err != nil {
+	batchCmd := make([]*Cmd, 0)
+	batchCmd = append(batchCmd, p.versionCommand())
+
+	if err := p.getPlaybooks(); err != nil {
 		return err
 	}
 
@@ -52,32 +54,27 @@ func (p *Plugin) Execute() error {
 		defer os.Remove(p.Settings.VaultPasswordFile)
 	}
 
-	commands := []*execabs.Cmd{
-		p.versionCommand(),
-	}
-
 	if p.Settings.PythonRequirements != "" {
-		commands = append(commands, p.pythonRequirementsCommand())
+		batchCmd = append(batchCmd, p.pythonRequirementsCommand())
 	}
 
 	if p.Settings.GalaxyRequirements != "" {
-		commands = append(commands, p.galaxyRequirementsCommand())
+		batchCmd = append(batchCmd, p.galaxyRequirementsCommand())
 	}
 
 	for _, inventory := range p.Settings.Inventories.Value() {
-		commands = append(commands, p.ansibleCommand(inventory))
+		batchCmd = append(batchCmd, p.ansibleCommand(inventory))
 	}
 
-	for _, cmd := range commands {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+	for _, bc := range batchCmd {
+		bc.Stdout = os.Stdout
+		bc.Stderr = os.Stderr
+		trace.Cmd(bc.Cmd)
 
-		cmd.Env = os.Environ()
-		cmd.Env = append(cmd.Env, "ANSIBLE_FORCE_COLOR=1")
+		bc.Env = os.Environ()
+		bc.Env = append(bc.Env, "ANSIBLE_FORCE_COLOR=1")
 
-		trace.Cmd(cmd)
-
-		if err := cmd.Run(); err != nil {
+		if err := bc.Run(); err != nil {
 			return err
 		}
 	}

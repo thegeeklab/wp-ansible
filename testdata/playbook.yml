@@ -1,0 +1,6 @@
+---
+- hosts: all
+  tasks:
+    - name: Hello World
+      debug:
+        msg: "Say hello"
