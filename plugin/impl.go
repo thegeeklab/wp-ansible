@@ -22,49 +22,46 @@ func (p *Plugin) run(_ context.Context) error {
 
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
+	if err := p.Settings.Ansible.GetPlaybooks(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	var err error
+
 	batchCmd := make([]*types.Cmd, 0)
-	batchCmd = append(batchCmd, p.versionCommand())
 
-	if err := p.getPlaybooks(); err != nil {
-		return err
-	}
-
-	if err := p.ansibleConfig(); err != nil {
-		return err
-	}
+	batchCmd = append(batchCmd, p.Settings.Ansible.Version())
 
 	if p.Settings.PrivateKey != "" {
-		if err := p.privateKey(); err != nil {
+		if p.Settings.Ansible.PrivateKeyFile, err = WriteFile("privateKey", p.Settings.PrivateKey); err != nil {
 			return err
 		}
 
-		defer os.Remove(p.Settings.PrivateKeyFile)
+		defer os.Remove(p.Settings.Ansible.PrivateKeyFile)
 	}
 
 	if p.Settings.VaultPassword != "" {
-		if err := p.vaultPass(); err != nil {
+		if p.Settings.Ansible.VaultPasswordFile, err = WriteFile("vaultPass", p.Settings.VaultPassword); err != nil {
 			return err
 		}
 
-		defer os.Remove(p.Settings.VaultPasswordFile)
+		defer os.Remove(p.Settings.Ansible.VaultPasswordFile)
 	}
 
 	if p.Settings.PythonRequirements != "" {
-		batchCmd = append(batchCmd, p.pythonRequirementsCommand())
+		batchCmd = append(batchCmd, PipInstall(p.Settings.PythonRequirements))
 	}
 
-	if p.Settings.GalaxyRequirements != "" {
-		batchCmd = append(batchCmd, p.galaxyRequirementsCommand())
+	if p.Settings.Ansible.GalaxyRequirements != "" {
+		batchCmd = append(batchCmd, p.Settings.Ansible.GalaxyInstall())
 	}
 
-	for _, inventory := range p.Settings.Inventories.Value() {
-		batchCmd = append(batchCmd, p.ansibleCommand(inventory))
-	}
+	batchCmd = append(batchCmd, p.Settings.Ansible.Play())
 
 	for _, cmd := range batchCmd {
 		cmd.Env = append(cmd.Env, "ANSIBLE_FORCE_COLOR=1")

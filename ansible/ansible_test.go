@@ -1,4 +1,4 @@
-package plugin
+package ansible
 
 import (
 	"testing"
@@ -7,84 +7,53 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func TestVersionCommand(t *testing.T) {
+func TestVersion(t *testing.T) {
 	tests := []struct {
-		name   string
-		plugin *Plugin
-		want   []string
+		name    string
+		ansible *Ansible
+		want    []string
 	}{
 		{
-			name:   "test version command",
-			plugin: &Plugin{},
-			want:   []string{ansibleBin, "--version"},
+			name:    "test version command",
+			ansible: &Ansible{},
+			want:    []string{ansibleBin, "--version"},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := tt.plugin.versionCommand()
+			cmd := tt.ansible.Version()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 		})
 	}
 }
 
-func TestPythonRequirementsCommand(t *testing.T) {
+func TestGalaxyInstall(t *testing.T) {
 	tests := []struct {
-		name   string
-		plugin *Plugin
-		want   []string
-	}{
-		{
-			name: "with valid requirements file",
-			plugin: &Plugin{
-				Settings: &Settings{
-					PythonRequirements: "requirements.txt",
-				},
-			},
-			want: []string{pipBin, "install", "--upgrade", "--requirement", "requirements.txt"},
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			cmd := tt.plugin.pythonRequirementsCommand()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
-		})
-	}
-}
-
-func TestGalaxyRequirementsCommand(t *testing.T) {
-	tests := []struct {
-		name   string
-		plugin *Plugin
-		want   []string
+		name    string
+		ansible *Ansible
+		want    []string
 	}{
 		{
 			name: "with valid requirements file and no verbosity",
-			plugin: &Plugin{
-				Settings: &Settings{
-					GalaxyRequirements: "requirements.yml",
-				},
+			ansible: &Ansible{
+				GalaxyRequirements: "requirements.yml",
 			},
 			want: []string{ansibleGalaxyBin, "install", "--force", "--role-file", "requirements.yml"},
 		},
 		{
 			name: "with valid requirements file and verbosity level 1",
-			plugin: &Plugin{
-				Settings: &Settings{
-					GalaxyRequirements: "requirements.yml",
-					Verbose:            1,
-				},
+			ansible: &Ansible{
+				GalaxyRequirements: "requirements.yml",
+				Verbose:            1,
 			},
 			want: []string{ansibleGalaxyBin, "install", "--force", "--role-file", "requirements.yml", "-v"},
 		},
 		{
 			name: "with valid requirements file and verbosity level 3",
-			plugin: &Plugin{
-				Settings: &Settings{
-					GalaxyRequirements: "requirements.yml",
-					Verbose:            3,
-				},
+			ansible: &Ansible{
+				GalaxyRequirements: "requirements.yml",
+				Verbose:            3,
 			},
 			want: []string{ansibleGalaxyBin, "install", "--force", "--role-file", "requirements.yml", "-vvv"},
 		},
@@ -92,7 +61,7 @@ func TestGalaxyRequirementsCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := tt.plugin.galaxyRequirementsCommand()
+			cmd := tt.ansible.GalaxyInstall()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 		})
 	}
@@ -100,23 +69,22 @@ func TestGalaxyRequirementsCommand(t *testing.T) {
 
 func TestAnsibleCommand(t *testing.T) {
 	tests := []struct {
-		name   string
-		plugin *Plugin
-		want   []string
+		name    string
+		ansible *Ansible
+		want    []string
 	}{
 		{
 			name: "with inventory and no other settings",
-			plugin: &Plugin{
-				Settings: &Settings{},
+			ansible: &Ansible{
+				Inventories: *cli.NewStringSlice("inventory.yml"),
 			},
 			want: []string{ansiblePlaybookBin, "--inventory", "inventory.yml", "--forks", "0"},
 		},
 		{
 			name: "with inventory and module path",
-			plugin: &Plugin{
-				Settings: &Settings{
-					ModulePath: *cli.NewStringSlice("/path/to/modules"),
-				},
+			ansible: &Ansible{
+				Inventories: *cli.NewStringSlice("inventory.yml"),
+				ModulePath:  *cli.NewStringSlice("/path/to/modules"),
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path",
@@ -125,11 +93,10 @@ func TestAnsibleCommand(t *testing.T) {
 		},
 		{
 			name: "with inventory, module path, and vault ID",
-			plugin: &Plugin{
-				Settings: &Settings{
-					ModulePath: *cli.NewStringSlice("/path/to/modules"),
-					VaultID:    "my_vault_id",
-				},
+			ansible: &Ansible{
+				Inventories: *cli.NewStringSlice("inventory.yml"),
+				ModulePath:  *cli.NewStringSlice("/path/to/modules"),
+				VaultID:     "my_vault_id",
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path", "/path/to/modules",
@@ -138,12 +105,11 @@ func TestAnsibleCommand(t *testing.T) {
 		},
 		{
 			name: "with inventory, module path, vault ID, and vault password file",
-			plugin: &Plugin{
-				Settings: &Settings{
-					ModulePath:        *cli.NewStringSlice("/path/to/modules"),
-					VaultID:           "my_vault_id",
-					VaultPasswordFile: "/path/to/vault/password/file",
-				},
+			ansible: &Ansible{
+				Inventories:       *cli.NewStringSlice("inventory.yml"),
+				ModulePath:        *cli.NewStringSlice("/path/to/modules"),
+				VaultID:           "my_vault_id",
+				VaultPasswordFile: "/path/to/vault/password/file",
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path", "/path/to/modules",
@@ -153,13 +119,12 @@ func TestAnsibleCommand(t *testing.T) {
 		},
 		{
 			name: "with inventory, module path, vault ID, vault password file, and extra vars",
-			plugin: &Plugin{
-				Settings: &Settings{
-					ModulePath:        *cli.NewStringSlice("/path/to/modules"),
-					VaultID:           "my_vault_id",
-					VaultPasswordFile: "/path/to/vault/password/file",
-					ExtraVars:         *cli.NewStringSlice("var1=value1", "var2=value2"),
-				},
+			ansible: &Ansible{
+				Inventories:       *cli.NewStringSlice("inventory.yml"),
+				ModulePath:        *cli.NewStringSlice("/path/to/modules"),
+				VaultID:           "my_vault_id",
+				VaultPasswordFile: "/path/to/vault/password/file",
+				ExtraVars:         *cli.NewStringSlice("var1=value1", "var2=value2"),
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path", "/path/to/modules",
@@ -169,11 +134,10 @@ func TestAnsibleCommand(t *testing.T) {
 		},
 		{
 			name: "with inventory and list hosts",
-			plugin: &Plugin{
-				Settings: &Settings{
-					ListHosts: true,
-					Playbooks: *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
-				},
+			ansible: &Ansible{
+				ListHosts:   true,
+				Inventories: *cli.NewStringSlice("inventory.yml"),
+				Playbooks:   *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--list-hosts",
@@ -182,11 +146,10 @@ func TestAnsibleCommand(t *testing.T) {
 		},
 		{
 			name: "with inventory and syntax check",
-			plugin: &Plugin{
-				Settings: &Settings{
-					SyntaxCheck: true,
-					Playbooks:   *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
-				},
+			ansible: &Ansible{
+				SyntaxCheck: true,
+				Inventories: *cli.NewStringSlice("inventory.yml"),
+				Playbooks:   *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--syntax-check",
@@ -195,33 +158,32 @@ func TestAnsibleCommand(t *testing.T) {
 		},
 		{
 			name: "with all options",
-			plugin: &Plugin{
-				Settings: &Settings{
-					Check:          true,
-					Diff:           true,
-					FlushCache:     true,
-					ForceHandlers:  true,
-					Forks:          10,
-					Limit:          "host1,host2",
-					ListTags:       true,
-					ListTasks:      true,
-					SkipTags:       "tag1,tag2",
-					StartAtTask:    "task_name",
-					Tags:           "tag3,tag4",
-					PrivateKeyFile: "/path/to/private/key",
-					User:           "remote_user",
-					Connection:     "ssh",
-					Timeout:        60,
-					SSHCommonArgs:  "-o StrictHostKeyChecking=no",
-					SFTPExtraArgs:  "-o IdentitiesOnly=yes",
-					SCPExtraArgs:   "-r",
-					SSHExtraArgs:   "-o ForwardAgent=yes",
-					Become:         true,
-					BecomeMethod:   "sudo",
-					BecomeUser:     "root",
-					Verbose:        2,
-					Playbooks:      *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
-				},
+			ansible: &Ansible{
+				Check:          true,
+				Diff:           true,
+				FlushCache:     true,
+				ForceHandlers:  true,
+				Forks:          10,
+				Limit:          "host1,host2",
+				ListTags:       true,
+				ListTasks:      true,
+				SkipTags:       "tag1,tag2",
+				StartAtTask:    "task_name",
+				Tags:           "tag3,tag4",
+				PrivateKeyFile: "/path/to/private/key",
+				User:           "remote_user",
+				Connection:     "ssh",
+				Timeout:        60,
+				SSHCommonArgs:  "-o StrictHostKeyChecking=no",
+				SFTPExtraArgs:  "-o IdentitiesOnly=yes",
+				SCPExtraArgs:   "-r",
+				SSHExtraArgs:   "-o ForwardAgent=yes",
+				Become:         true,
+				BecomeMethod:   "sudo",
+				BecomeUser:     "root",
+				Verbose:        2,
+				Inventories:    *cli.NewStringSlice("inventory.yml"),
+				Playbooks:      *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--check", "--diff", "--flush-cache",
@@ -237,7 +199,7 @@ func TestAnsibleCommand(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := tt.plugin.ansibleCommand("inventory.yml")
+			cmd := tt.ansible.Play()
 			require.Equal(t, tt.want, cmd.Cmd.Args)
 		})
 	}
