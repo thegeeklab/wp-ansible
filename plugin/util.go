@@ -1,9 +1,6 @@
 package plugin
 
 import (
-	"fmt"
-	"os"
-
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"golang.org/x/sys/execabs"
 )
@@ -23,22 +20,4 @@ func PipInstall(req string) *types.Cmd {
 	return &types.Cmd{
 		Cmd: execabs.Command(pipBin, args...),
 	}
-}
-
-// WriteFile creates a temporary file with the given name and content, and returns the path to the created file.
-func WriteFile(name, content string) (string, error) {
-	tmpfile, err := os.CreateTemp("", name)
-	if err != nil {
-		return "", fmt.Errorf("failed to create file: %w", err)
-	}
-
-	if _, err := tmpfile.Write([]byte(content)); err != nil {
-		return "", fmt.Errorf("failed to write file: %w", err)
-	}
-
-	if err := tmpfile.Close(); err != nil {
-		return "", fmt.Errorf("failed to close file: %w", err)
-	}
-
-	return tmpfile.Name(), nil
 }

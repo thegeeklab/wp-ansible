@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/thegeeklab/wp-plugin-go/v2/file"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
@@ -38,7 +39,7 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Ansible.Version())
 
 	if p.Settings.PrivateKey != "" {
-		if p.Settings.Ansible.PrivateKeyFile, err = WriteFile("privateKey", p.Settings.PrivateKey); err != nil {
+		if p.Settings.Ansible.PrivateKeyFile, err = file.WriteTmpFile("privateKey", p.Settings.PrivateKey); err != nil {
 			return err
 		}
 
@@ -46,7 +47,7 @@ func (p *Plugin) Execute() error {
 	}
 
 	if p.Settings.VaultPassword != "" {
-		if p.Settings.Ansible.VaultPasswordFile, err = WriteFile("vaultPass", p.Settings.VaultPassword); err != nil {
+		if p.Settings.Ansible.VaultPasswordFile, err = file.WriteTmpFile("vaultPass", p.Settings.VaultPassword); err != nil {
 			return err
 		}
 
