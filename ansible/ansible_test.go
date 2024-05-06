@@ -3,7 +3,7 @@ package ansible
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,7 +23,7 @@ func TestVersion(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.ansible.Version()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
 		})
 	}
 }
@@ -62,7 +62,7 @@ func TestGalaxyInstall(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.ansible.GalaxyInstall()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
 		})
 	}
 }
@@ -200,7 +200,7 @@ func TestAnsibleCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.ansible.Play()
-			require.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Cmd.Args)
 		})
 	}
 }
