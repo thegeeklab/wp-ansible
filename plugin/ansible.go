@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/sys/execabs"
 )
@@ -27,8 +28,7 @@ const (
 	strictFilePerm = 0o600
 )
 
-const ansibleContent = `
-[defaults]
+const ansibleContent = `[defaults]
 host_key_checking = False
 `
 
@@ -121,12 +121,12 @@ func (p *Plugin) getPlaybooks() error {
 	return nil
 }
 
-func (p *Plugin) versionCommand() *Cmd {
+func (p *Plugin) versionCommand() *types.Cmd {
 	args := []string{
 		"--version",
 	}
 
-	return &Cmd{
+	return &types.Cmd{
 		Cmd: execabs.Command(ansibleBin, args...),
 	}
 }
@@ -134,7 +134,7 @@ func (p *Plugin) versionCommand() *Cmd {
 // pythonRequirementsCommand returns an execabs.Cmd that runs the pip install
 // command with the specified Python requirements file and upgrades any existing
 // packages.
-func (p *Plugin) pythonRequirementsCommand() *Cmd {
+func (p *Plugin) pythonRequirementsCommand() *types.Cmd {
 	args := []string{
 		"install",
 		"--upgrade",
@@ -142,14 +142,14 @@ func (p *Plugin) pythonRequirementsCommand() *Cmd {
 		p.Settings.PythonRequirements,
 	}
 
-	return &Cmd{
+	return &types.Cmd{
 		Cmd: execabs.Command(pipBin, args...),
 	}
 }
 
 // galaxyRequirementsCommand returns an execabs.Cmd that runs the Ansible Galaxy
 // install command with the specified role file and verbosity level.
-func (p *Plugin) galaxyRequirementsCommand() *Cmd {
+func (p *Plugin) galaxyRequirementsCommand() *types.Cmd {
 	args := []string{
 		"install",
 		"--force",
@@ -161,14 +161,14 @@ func (p *Plugin) galaxyRequirementsCommand() *Cmd {
 		args = append(args, fmt.Sprintf("-%s", strings.Repeat("v", p.Settings.Verbose)))
 	}
 
-	return &Cmd{
+	return &types.Cmd{
 		Cmd: execabs.Command(ansibleGalaxyBin, args...),
 	}
 }
 
 // ansibleCommand returns an execabs.Cmd that runs the Ansible playbook with the
 // specified inventory file and various configuration options set on the Plugin struct.
-func (p *Plugin) ansibleCommand(inventory string) *Cmd {
+func (p *Plugin) ansibleCommand(inventory string) *types.Cmd {
 	args := []string{
 		"--inventory",
 		inventory,
@@ -194,7 +194,7 @@ func (p *Plugin) ansibleCommand(inventory string) *Cmd {
 		args = append(args, "--list-hosts")
 		args = append(args, p.Settings.Playbooks.Value()...)
 
-		return &Cmd{
+		return &types.Cmd{
 			Cmd: execabs.Command(ansiblePlaybookBin, args...),
 		}
 	}
@@ -203,7 +203,7 @@ func (p *Plugin) ansibleCommand(inventory string) *Cmd {
 		args = append(args, "--syntax-check")
 		args = append(args, p.Settings.Playbooks.Value()...)
 
-		return &Cmd{
+		return &types.Cmd{
 			Cmd: execabs.Command(ansiblePlaybookBin, args...),
 		}
 	}
@@ -302,7 +302,7 @@ func (p *Plugin) ansibleCommand(inventory string) *Cmd {
 
 	args = append(args, p.Settings.Playbooks.Value()...)
 
-	return &Cmd{
+	return &types.Cmd{
 		Cmd:     execabs.Command(ansiblePlaybookBin, args...),
 		Private: false,
 	}

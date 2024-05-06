@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/trace"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
 func (p *Plugin) run(_ context.Context) error {
@@ -27,7 +27,7 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	batchCmd := make([]*Cmd, 0)
+	batchCmd := make([]*types.Cmd, 0)
 	batchCmd = append(batchCmd, p.versionCommand())
 
 	if err := p.getPlaybooks(); err != nil {
@@ -66,15 +66,10 @@ func (p *Plugin) Execute() error {
 		batchCmd = append(batchCmd, p.ansibleCommand(inventory))
 	}
 
-	for _, bc := range batchCmd {
-		bc.Stdout = os.Stdout
-		bc.Stderr = os.Stderr
-		trace.Cmd(bc.Cmd)
+	for _, cmd := range batchCmd {
+		cmd.Env = append(cmd.Env, "ANSIBLE_FORCE_COLOR=1")
 
-		bc.Env = os.Environ()
-		bc.Env = append(bc.Env, "ANSIBLE_FORCE_COLOR=1")
-
-		if err := bc.Run(); err != nil {
+		if err := cmd.Run(); err != nil {
 			return err
 		}
 	}
