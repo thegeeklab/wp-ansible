@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/trace"
+	"github.com/thegeeklab/wp-plugin-go/v2/file"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
 func (p *Plugin) run(_ context.Context) error {
@@ -22,59 +23,51 @@ func (p *Plugin) run(_ context.Context) error {
 
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
+	if err := p.Settings.Ansible.GetPlaybooks(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	batchCmd := make([]*Cmd, 0)
-	batchCmd = append(batchCmd, p.versionCommand())
+	var err error
 
-	if err := p.getPlaybooks(); err != nil {
-		return err
-	}
+	batchCmd := make([]*types.Cmd, 0)
 
-	if err := p.ansibleConfig(); err != nil {
-		return err
-	}
+	batchCmd = append(batchCmd, p.Settings.Ansible.Version())
 
 	if p.Settings.PrivateKey != "" {
-		if err := p.privateKey(); err != nil {
+		if p.Settings.Ansible.PrivateKeyFile, err = file.WriteTmpFile("privateKey", p.Settings.PrivateKey); err != nil {
 			return err
 		}
 
-		defer os.Remove(p.Settings.PrivateKeyFile)
+		defer os.Remove(p.Settings.Ansible.PrivateKeyFile)
 	}
 
 	if p.Settings.VaultPassword != "" {
-		if err := p.vaultPass(); err != nil {
+		if p.Settings.Ansible.VaultPasswordFile, err = file.WriteTmpFile("vaultPass", p.Settings.VaultPassword); err != nil {
 			return err
 		}
 
-		defer os.Remove(p.Settings.VaultPasswordFile)
+		defer os.Remove(p.Settings.Ansible.VaultPasswordFile)
 	}
 
 	if p.Settings.PythonRequirements != "" {
-		batchCmd = append(batchCmd, p.pythonRequirementsCommand())
+		batchCmd = append(batchCmd, PipInstall(p.Settings.PythonRequirements))
 	}
 
-	if p.Settings.GalaxyRequirements != "" {
-		batchCmd = append(batchCmd, p.galaxyRequirementsCommand())
+	if p.Settings.Ansible.GalaxyRequirements != "" {
+		batchCmd = append(batchCmd, p.Settings.Ansible.GalaxyInstall())
 	}
 
-	for _, inventory := range p.Settings.Inventories.Value() {
-		batchCmd = append(batchCmd, p.ansibleCommand(inventory))
-	}
+	batchCmd = append(batchCmd, p.Settings.Ansible.Play())
 
-	for _, bc := range batchCmd {
-		bc.Stdout = os.Stdout
-		bc.Stderr = os.Stderr
-		trace.Cmd(bc.Cmd)
+	for _, cmd := range batchCmd {
+		cmd.Env = append(os.Environ(), "ANSIBLE_FORCE_COLOR=1")
 
-		bc.Env = os.Environ()
-		bc.Env = append(bc.Env, "ANSIBLE_FORCE_COLOR=1")
-
-		if err := bc.Run(); err != nil {
+		if err := cmd.Run(); err != nil {
 			return err
 		}
 	}
