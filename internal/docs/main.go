@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/thegeeklab/wp-ansible/plugin"
-	"github.com/thegeeklab/wp-plugin-go/docs"
-	"github.com/thegeeklab/wp-plugin-go/template"
+	"github.com/thegeeklab/wp-plugin-go/v2/docs"
+	"github.com/thegeeklab/wp-plugin-go/v2/template"
 )
 
 func main() {
