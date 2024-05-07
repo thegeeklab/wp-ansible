@@ -65,6 +65,10 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Ansible.Play())
 
 	for _, cmd := range batchCmd {
+		if cmd == nil {
+			continue
+		}
+
 		cmd.Env = append(os.Environ(), "ANSIBLE_FORCE_COLOR=1")
 
 		if err := cmd.Run(); err != nil {
