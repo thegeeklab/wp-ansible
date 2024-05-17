@@ -3,14 +3,14 @@ package ansible
 import (
 	"errors"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/sys/execabs"
 )
 
 const (
@@ -59,14 +59,16 @@ type Ansible struct {
 }
 
 // Version runs the Ansible binary with the --version flag to retrieve the current version.
-func (a *Ansible) Version() *types.Cmd {
+func (a *Ansible) Version() *plugin_exec.Cmd {
 	args := []string{
 		"--version",
 	}
 
-	return &types.Cmd{
-		Cmd: execabs.Command(ansibleBin, args...),
-	}
+	cmd := plugin_exec.Command(ansibleBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
 
 // GetPlaybooks retrieves the list of Ansible playbook files based on the configured playbook patterns.
@@ -96,7 +98,7 @@ func (a *Ansible) GetPlaybooks() error {
 }
 
 // GalaxyInstall runs the ansible-galaxy install command with the configured options.
-func (a *Ansible) GalaxyInstall() *types.Cmd {
+func (a *Ansible) GalaxyInstall() *plugin_exec.Cmd {
 	args := []string{
 		"install",
 		"--force",
@@ -108,15 +110,17 @@ func (a *Ansible) GalaxyInstall() *types.Cmd {
 		args = append(args, fmt.Sprintf("-%s", strings.Repeat("v", a.Verbose)))
 	}
 
-	return &types.Cmd{
-		Cmd: execabs.Command(ansibleGalaxyBin, args...),
-	}
+	cmd := plugin_exec.Command(ansibleGalaxyBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
 
 // Play runs the Ansible playbook with the configured options.
 //
 //nolint:gocyclo
-func (a *Ansible) Play() *types.Cmd {
+func (a *Ansible) Play() *plugin_exec.Cmd {
 	args := make([]string, 0)
 
 	for _, inventory := range a.Inventories.Value() {
@@ -143,18 +147,22 @@ func (a *Ansible) Play() *types.Cmd {
 		args = append(args, "--list-hosts")
 		args = append(args, a.Playbooks.Value()...)
 
-		return &types.Cmd{
-			Cmd: execabs.Command(ansiblePlaybookBin, args...),
-		}
+		cmd := plugin_exec.Command(ansiblePlaybookBin, args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		return cmd
 	}
 
 	if a.SyntaxCheck {
 		args = append(args, "--syntax-check")
 		args = append(args, a.Playbooks.Value()...)
 
-		return &types.Cmd{
-			Cmd: execabs.Command(ansiblePlaybookBin, args...),
-		}
+		cmd := plugin_exec.Command(ansiblePlaybookBin, args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		return cmd
 	}
 
 	if a.Check {
@@ -251,8 +259,9 @@ func (a *Ansible) Play() *types.Cmd {
 
 	args = append(args, a.Playbooks.Value()...)
 
-	return &types.Cmd{
-		Cmd:     execabs.Command(ansiblePlaybookBin, args...),
-		Private: false,
-	}
+	cmd := plugin_exec.Command(ansiblePlaybookBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }

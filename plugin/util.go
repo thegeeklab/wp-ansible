@@ -1,15 +1,16 @@
 package plugin
 
 import (
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
-	"golang.org/x/sys/execabs"
+	"os"
+
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
 const pipBin = "/usr/local/bin/pip"
 
 // PipInstall returns a command to install Python packages from a requirements file.
 // The command will upgrade any existing packages and install the packages specified in the given requirements file.
-func PipInstall(req string) *types.Cmd {
+func PipInstall(req string) *plugin_exec.Cmd {
 	args := []string{
 		"install",
 		"--upgrade",
@@ -17,7 +18,9 @@ func PipInstall(req string) *types.Cmd {
 		req,
 	}
 
-	return &types.Cmd{
-		Cmd: execabs.Command(pipBin, args...),
-	}
+	cmd := plugin_exec.Command(pipBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
