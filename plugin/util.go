@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	"github.com/thegeeklab/wp-plugin-go/v3/types"
 	"golang.org/x/sys/execabs"
 )
 

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thegeeklab/wp-ansible/ansible"
-	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
+	wp "github.com/thegeeklab/wp-plugin-go/v3/plugin"
 	"github.com/urfave/cli/v2"
 )
 
