@@ -1,6 +1,6 @@
 module github.com/thegeeklab/wp-ansible
 
-go 1.24.0
+go 1.24.1
 
 require (
 	github.com/rs/zerolog v1.33.0
