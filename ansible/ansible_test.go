@@ -23,7 +23,7 @@ func TestVersion(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.ansible.Version()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -62,7 +62,7 @@ func TestGalaxyInstall(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.ansible.GalaxyInstall()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -200,7 +200,7 @@ func TestAnsibleCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.ansible.Play()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
