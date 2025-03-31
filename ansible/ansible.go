@@ -10,7 +10,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 )
 
 const (
