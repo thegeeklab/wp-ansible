@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/urfave/cli/v3"
 )
 
 func TestVersion(t *testing.T) {
@@ -76,15 +75,15 @@ func TestAnsibleCommand(t *testing.T) {
 		{
 			name: "with inventory and no other settings",
 			ansible: &Ansible{
-				Inventories: *cli.NewStringSlice("inventory.yml"),
+				Inventories: []string{"inventory.yml"},
 			},
 			want: []string{ansiblePlaybookBin, "--inventory", "inventory.yml", "--forks", "0"},
 		},
 		{
 			name: "with inventory and module path",
 			ansible: &Ansible{
-				Inventories: *cli.NewStringSlice("inventory.yml"),
-				ModulePath:  *cli.NewStringSlice("/path/to/modules"),
+				Inventories: []string{"inventory.yml"},
+				ModulePath:  []string{"/path/to/modules"},
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path",
@@ -94,8 +93,8 @@ func TestAnsibleCommand(t *testing.T) {
 		{
 			name: "with inventory, module path, and vault ID",
 			ansible: &Ansible{
-				Inventories: *cli.NewStringSlice("inventory.yml"),
-				ModulePath:  *cli.NewStringSlice("/path/to/modules"),
+				Inventories: []string{"inventory.yml"},
+				ModulePath:  []string{"/path/to/modules"},
 				VaultID:     "my_vault_id",
 			},
 			want: []string{
@@ -106,8 +105,8 @@ func TestAnsibleCommand(t *testing.T) {
 		{
 			name: "with inventory, module path, vault ID, and vault password file",
 			ansible: &Ansible{
-				Inventories:       *cli.NewStringSlice("inventory.yml"),
-				ModulePath:        *cli.NewStringSlice("/path/to/modules"),
+				Inventories:       []string{"inventory.yml"},
+				ModulePath:        []string{"/path/to/modules"},
 				VaultID:           "my_vault_id",
 				VaultPasswordFile: "/path/to/vault/password/file",
 			},
@@ -120,11 +119,11 @@ func TestAnsibleCommand(t *testing.T) {
 		{
 			name: "with inventory, module path, vault ID, vault password file, and extra vars",
 			ansible: &Ansible{
-				Inventories:       *cli.NewStringSlice("inventory.yml"),
-				ModulePath:        *cli.NewStringSlice("/path/to/modules"),
+				Inventories:       []string{"inventory.yml"},
+				ModulePath:        []string{"/path/to/modules"},
 				VaultID:           "my_vault_id",
 				VaultPasswordFile: "/path/to/vault/password/file",
-				ExtraVars:         *cli.NewStringSlice("var1=value1", "var2=value2"),
+				ExtraVars:         []string{"var1=value1", "var2=value2"},
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path", "/path/to/modules",
@@ -136,8 +135,8 @@ func TestAnsibleCommand(t *testing.T) {
 			name: "with inventory and list hosts",
 			ansible: &Ansible{
 				ListHosts:   true,
-				Inventories: *cli.NewStringSlice("inventory.yml"),
-				Playbooks:   *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
+				Inventories: []string{"inventory.yml"},
+				Playbooks:   []string{"playbook1.yml", "playbook2.yml"},
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--list-hosts",
@@ -148,8 +147,8 @@ func TestAnsibleCommand(t *testing.T) {
 			name: "with inventory and syntax check",
 			ansible: &Ansible{
 				SyntaxCheck: true,
-				Inventories: *cli.NewStringSlice("inventory.yml"),
-				Playbooks:   *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
+				Inventories: []string{"inventory.yml"},
+				Playbooks:   []string{"playbook1.yml", "playbook2.yml"},
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--syntax-check",
@@ -182,8 +181,8 @@ func TestAnsibleCommand(t *testing.T) {
 				BecomeMethod:   "sudo",
 				BecomeUser:     "root",
 				Verbose:        2,
-				Inventories:    *cli.NewStringSlice("inventory.yml"),
-				Playbooks:      *cli.NewStringSlice("playbook1.yml", "playbook2.yml"),
+				Inventories:    []string{"inventory.yml"},
+				Playbooks:      []string{"playbook1.yml", "playbook2.yml"},
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--check", "--diff", "--flush-cache",

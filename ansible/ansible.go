@@ -9,8 +9,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
-	"github.com/urfave/cli/v3"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
 )
 
 const (
@@ -25,14 +24,14 @@ var ErrAnsiblePlaybookNotFound = errors.New("no playbook found")
 
 type Ansible struct {
 	GalaxyRequirements string
-	Inventories        cli.StringSlice
-	Playbooks          cli.StringSlice
+	Inventories        []string
+	Playbooks          []string
 	Limit              string
 	SkipTags           string
 	StartAtTask        string
 	Tags               string
-	ExtraVars          cli.StringSlice
-	ModulePath         cli.StringSlice
+	ExtraVars          []string
+	ModulePath         []string
 	Check              bool
 	Diff               bool
 	FlushCache         bool
@@ -75,7 +74,7 @@ func (a *Ansible) Version() *plugin_exec.Cmd {
 func (a *Ansible) GetPlaybooks() error {
 	var playbooks []string
 
-	for _, pb := range a.Playbooks.Value() {
+	for _, pb := range a.Playbooks {
 		files, err := filepath.Glob(pb)
 		if err != nil {
 			playbooks = append(playbooks, pb)
@@ -87,12 +86,12 @@ func (a *Ansible) GetPlaybooks() error {
 	}
 
 	if len(playbooks) == 0 {
-		log.Debug().Strs("patterns", a.Playbooks.Value()).Msg("no playbooks found")
+		log.Debug().Strs("patterns", a.Playbooks).Msg("no playbooks found")
 
 		return ErrAnsiblePlaybookNotFound
 	}
 
-	a.Playbooks = *cli.NewStringSlice(playbooks...)
+	a.Playbooks = append(a.Playbooks, playbooks...)
 
 	return nil
 }
@@ -123,12 +122,12 @@ func (a *Ansible) GalaxyInstall() *plugin_exec.Cmd {
 func (a *Ansible) Play() *plugin_exec.Cmd {
 	args := make([]string, 0)
 
-	for _, inventory := range a.Inventories.Value() {
+	for _, inventory := range a.Inventories {
 		args = append(args, "--inventory", inventory)
 	}
 
-	if len(a.ModulePath.Value()) > 0 {
-		args = append(args, "--module-path", strings.Join(a.ModulePath.Value(), ":"))
+	if len(a.ModulePath) > 0 {
+		args = append(args, "--module-path", strings.Join(a.ModulePath, ":"))
 	}
 
 	if a.VaultID != "" {
@@ -139,13 +138,13 @@ func (a *Ansible) Play() *plugin_exec.Cmd {
 		args = append(args, "--vault-password-file", a.VaultPasswordFile)
 	}
 
-	for _, v := range a.ExtraVars.Value() {
+	for _, v := range a.ExtraVars {
 		args = append(args, "--extra-vars", v)
 	}
 
 	if a.ListHosts {
 		args = append(args, "--list-hosts")
-		args = append(args, a.Playbooks.Value()...)
+		args = append(args, a.Playbooks...)
 
 		cmd := plugin_exec.Command(ansiblePlaybookBin, args...)
 		cmd.Stdout = os.Stdout
@@ -156,7 +155,7 @@ func (a *Ansible) Play() *plugin_exec.Cmd {
 
 	if a.SyntaxCheck {
 		args = append(args, "--syntax-check")
-		args = append(args, a.Playbooks.Value()...)
+		args = append(args, a.Playbooks...)
 
 		cmd := plugin_exec.Command(ansiblePlaybookBin, args...)
 		cmd.Stdout = os.Stdout
@@ -257,7 +256,7 @@ func (a *Ansible) Play() *plugin_exec.Cmd {
 		args = append(args, fmt.Sprintf("-%s", strings.Repeat("v", a.Verbose)))
 	}
 
-	args = append(args, a.Playbooks.Value()...)
+	args = append(args, a.Playbooks...)
 
 	cmd := plugin_exec.Command(ansiblePlaybookBin, args...)
 	cmd.Stdout = os.Stdout
