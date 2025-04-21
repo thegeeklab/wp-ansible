@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/thegeeklab/wp-ansible/ansible"
-	plugin_cli "github.com/thegeeklab/wp-plugin-go/v6/cli"
 	plugin_base "github.com/thegeeklab/wp-plugin-go/v6/plugin"
 	"github.com/urfave/cli/v3"
 )
@@ -186,7 +185,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SyntaxCheck,
 			Category:    category,
 		},
-		&plugin_cli.IntFlag{
+		&cli.IntFlag{
 			Name:        "forks",
 			Usage:       "specify number of parallel processes to use",
 			Sources:     cli.EnvVars("PLUGIN_FORKS"),
@@ -208,7 +207,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.VaultPassword,
 			Category:    category,
 		},
-		&plugin_cli.IntFlag{
+		&cli.IntFlag{
 			Name:        "verbose",
 			Usage:       "level of verbosity, 0 up to 4",
 			Sources:     cli.EnvVars("PLUGIN_VERBOSE"),
@@ -236,7 +235,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Connection,
 			Category:    category,
 		},
-		&plugin_cli.IntFlag{
+		&cli.IntFlag{
 			Name:        "timeout",
 			Usage:       "override the connection timeout in seconds",
 			Sources:     cli.EnvVars("PLUGIN_TIMEOUT"),
