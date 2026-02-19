@@ -108,7 +108,7 @@ func TestAnsibleCommand(t *testing.T) {
 				Inventories:       []string{"inventory.yml"},
 				ModulePath:        []string{"/path/to/modules"},
 				VaultID:           "my_vault_id",
-				VaultPasswordFile: "/path/to/vault/password/file",
+				VaultPasswordFile: "/path/to/vault/password/file", //#nosec G101
 			},
 			want: []string{
 				ansiblePlaybookBin, "--inventory", "inventory.yml", "--module-path", "/path/to/modules",
@@ -122,7 +122,7 @@ func TestAnsibleCommand(t *testing.T) {
 				Inventories:       []string{"inventory.yml"},
 				ModulePath:        []string{"/path/to/modules"},
 				VaultID:           "my_vault_id",
-				VaultPasswordFile: "/path/to/vault/password/file",
+				VaultPasswordFile: "/path/to/vault/password/file", //#nosec G101
 				ExtraVars:         []string{"var1=value1", "var2=value2"},
 			},
 			want: []string{
