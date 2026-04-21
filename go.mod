@@ -3,7 +3,7 @@ module github.com/thegeeklab/wp-ansible
 go 1.26.2
 
 require (
-	github.com/rs/zerolog v1.35.0
+	github.com/rs/zerolog v1.35.1
 	github.com/stretchr/testify v1.11.1
 	github.com/thegeeklab/wp-plugin-go/v6 v6.0.14
 	github.com/urfave/cli/v3 v3.8.0
