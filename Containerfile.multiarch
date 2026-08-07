@@ -31,6 +31,7 @@ RUN apk --update add --virtual .build-deps python3-dev libffi-dev build-base && 
     pip install -qq --no-cache-dir ansible=="${ANSIBLE_VERSION}" \
       boto3 hcloud pywinrm passlib jsonschema && \
     apk del .build-deps && \
+    find /opt/ /usr/local/lib -path '*/pip/_vendor/bom.cdx.json' -delete && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/* && \
     rm -rf /root/.cache/
