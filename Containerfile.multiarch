@@ -32,6 +32,7 @@ RUN apk --update add --virtual .build-deps python3-dev libffi-dev build-base && 
       boto3 hcloud pywinrm passlib jsonschema && \
     apk del .build-deps && \
     find /opt/ /usr/local/lib -path '*/pip/_vendor/bom.cdx.json' -delete && \
+    find /usr/local/lib -type d -path '*.dist-info/sboms' -exec rm -rf {} + && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/* && \
     rm -rf /root/.cache/
