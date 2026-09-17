@@ -81,6 +81,9 @@ linters:
     gosec:
       excludes:
         - G117 # Potential exposure of secrets via JSON marshaling
+    mnd:
+      ignored-numbers:
+        - "0o600"
     revive:
       rules:
         - name: var-naming

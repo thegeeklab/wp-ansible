@@ -8,7 +8,7 @@ import (
 	"github.com/urfave/cli/v3"
 )
 
-//go:generate go run ../internal/docs/main.go -output=../docs/data/data-raw.yaml
+//go:generate go run ../hack/docs-gen/main.go -output=../docs/data/data.yaml
 
 // Plugin implements provide the plugin.
 type Plugin struct {
@@ -57,6 +57,7 @@ func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 // Flags returns a slice of CLI flags for the plugin.
 func Flags(settings *Settings, category string) []cli.Flag {
 	return []cli.Flag{
+		// Path to python requirements file.
 		&cli.StringFlag{
 			Name:        "python-requirements",
 			Usage:       "path to python requirements file",
@@ -64,6 +65,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.PythonRequirements,
 			Category:    category,
 		},
+		// Path to galaxy requirements file.
 		&cli.StringFlag{
 			Name:        "galaxy-requirements",
 			Usage:       "path to galaxy requirements file",
@@ -71,6 +73,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.GalaxyRequirements,
 			Category:    category,
 		},
+		// Path to inventory file.
 		&cli.StringSliceFlag{
 			Name:        "inventory",
 			Usage:       "path to inventory file",
@@ -79,6 +82,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Inventories,
 			Category:    category,
 		},
+		// List of playbooks to apply.
 		&cli.StringSliceFlag{
 			Name:        "playbook",
 			Usage:       "list of playbooks to apply",
@@ -87,6 +91,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Playbooks,
 			Category:    category,
 		},
+		// Limit selected hosts to an additional pattern.
 		&cli.StringFlag{
 			Name:        "limit",
 			Usage:       "limit selected hosts to an additional pattern",
@@ -94,6 +99,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Limit,
 			Category:    category,
 		},
+		// Only run plays and tasks whose tags do not match.
 		&cli.StringFlag{
 			Name:        "skip-tags",
 			Usage:       "only run plays and tasks whose tags do not match",
@@ -101,6 +107,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SkipTags,
 			Category:    category,
 		},
+		// Start the playbook at the task matching this name.
 		&cli.StringFlag{
 			Name:        "start-at-task",
 			Usage:       "start the playbook at the task matching this name",
@@ -108,6 +115,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.StartAtTask,
 			Category:    category,
 		},
+		// Only run plays and tasks tagged with these values.
 		&cli.StringFlag{
 			Name:        "tags",
 			Usage:       "only run plays and tasks tagged with these values",
@@ -115,6 +123,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Tags,
 			Category:    category,
 		},
+		// Set additional variables as `key=value`.
 		&cli.StringSliceFlag{
 			Name:        "extra-vars",
 			Usage:       "set additional variables as `key=value`",
@@ -122,6 +131,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.ExtraVars,
 			Category:    category,
 		},
+		// Prepend paths to module library.
 		&cli.StringSliceFlag{
 			Name:        "module-path",
 			Usage:       "prepend paths to module library",
@@ -129,6 +139,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.ModulePath,
 			Category:    category,
 		},
+		// Run a check, do not apply any changes.
 		&cli.BoolFlag{
 			Name:        "check",
 			Usage:       "run a check, do not apply any changes",
@@ -136,6 +147,8 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Check,
 			Category:    category,
 		},
+		// Show the differences. Be careful when using it in public CI
+		// environments as it can print secrets.
 		&cli.BoolFlag{
 			Name:        "diff",
 			Usage:       "show the differences, may print secrets",
@@ -143,6 +156,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Diff,
 			Category:    category,
 		},
+		// Clear the fact cache for every host in inventory.
 		&cli.BoolFlag{
 			Name:        "flush-cache",
 			Usage:       "clear the fact cache for every host in inventory",
@@ -150,6 +164,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.FlushCache,
 			Category:    category,
 		},
+		// Run handlers even if a task fails.
 		&cli.BoolFlag{
 			Name:        "force-handlers",
 			Usage:       "run handlers even if a task fails",
@@ -157,6 +172,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.ForceHandlers,
 			Category:    category,
 		},
+		// Outputs a list of matching hosts.
 		&cli.BoolFlag{
 			Name:        "list-hosts",
 			Usage:       "outputs a list of matching hosts",
@@ -164,6 +180,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.ListHosts,
 			Category:    category,
 		},
+		// List all available tags.
 		&cli.BoolFlag{
 			Name:        "list-tags",
 			Usage:       "list all available tags",
@@ -171,6 +188,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.ListTags,
 			Category:    category,
 		},
+		// List all tasks that would be executed.
 		&cli.BoolFlag{
 			Name:        "list-tasks",
 			Usage:       "list all tasks that would be executed",
@@ -178,6 +196,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.ListTasks,
 			Category:    category,
 		},
+		// Perform a syntax check on the playbook.
 		&cli.BoolFlag{
 			Name:        "syntax-check",
 			Usage:       "perform a syntax check on the playbook",
@@ -185,6 +204,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SyntaxCheck,
 			Category:    category,
 		},
+		// Specify number of parallel processes to use.
 		&cli.IntFlag{
 			Name:        "forks",
 			Usage:       "specify number of parallel processes to use",
@@ -193,6 +213,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Forks,
 			Category:    category,
 		},
+		// The vault identity to use.
 		&cli.StringFlag{
 			Name:        "vault-id",
 			Usage:       "the vault identity to use",
@@ -200,6 +221,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.VaultID,
 			Category:    category,
 		},
+		// The vault password to use.
 		&cli.StringFlag{
 			Name:        "vault-password",
 			Usage:       "the vault password to use",
@@ -207,6 +229,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.VaultPassword,
 			Category:    category,
 		},
+		// Level of verbosity, 0 up to 4.
 		&cli.IntFlag{
 			Name:        "verbose",
 			Usage:       "level of verbosity, 0 up to 4",
@@ -214,6 +237,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Verbose,
 			Category:    category,
 		},
+		// SSH private key used to authenticate the connection.
 		&cli.StringFlag{
 			Name:        "private-key",
 			Usage:       "SSH private key used to authenticate the connection",
@@ -221,6 +245,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.PrivateKey,
 			Category:    category,
 		},
+		// Connect as this user.
 		&cli.StringFlag{
 			Name:        "user",
 			Usage:       "connect as this user",
@@ -228,6 +253,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.User,
 			Category:    category,
 		},
+		// Connection type to use.
 		&cli.StringFlag{
 			Name:        "connection",
 			Usage:       "connection type to use",
@@ -235,6 +261,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Connection,
 			Category:    category,
 		},
+		// Override the connection timeout in seconds.
 		&cli.IntFlag{
 			Name:        "timeout",
 			Usage:       "override the connection timeout in seconds",
@@ -242,6 +269,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Timeout,
 			Category:    category,
 		},
+		// Specify common arguments to pass to SFTP, SCP and SSH connections.
 		&cli.StringFlag{
 			Name:        "ssh-common-args",
 			Usage:       "specify common arguments to pass to SFTP, SCP and SSH connections",
@@ -249,6 +277,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SSHCommonArgs,
 			Category:    category,
 		},
+		// Specify extra arguments to pass to SFTP connections only.
 		&cli.StringFlag{
 			Name:        "sftp-extra-args",
 			Usage:       "specify extra arguments to pass to SFTP connections only",
@@ -256,6 +285,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SFTPExtraArgs,
 			Category:    category,
 		},
+		// Specify extra arguments to pass to SCP connections only.
 		&cli.StringFlag{
 			Name:        "scp-extra-args",
 			Usage:       "specify extra arguments to pass to SCP connections only",
@@ -263,6 +293,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SCPExtraArgs,
 			Category:    category,
 		},
+		// Specify extra arguments to pass to SSH connections only.
 		&cli.StringFlag{
 			Name:        "ssh-extra-args",
 			Usage:       "specify extra arguments to pass to SSH connections only",
@@ -270,6 +301,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.SSHExtraArgs,
 			Category:    category,
 		},
+		// Enable privilege escalation.
 		&cli.BoolFlag{
 			Name:        "become",
 			Usage:       "enable privilege escalation",
@@ -277,6 +309,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.Become,
 			Category:    category,
 		},
+		// Privilege escalation method to use.
 		&cli.StringFlag{
 			Name:        "become-method",
 			Usage:       "privilege escalation method to use",
@@ -284,6 +317,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Ansible.BecomeMethod,
 			Category:    category,
 		},
+		// Privilege escalation user to use.
 		&cli.StringFlag{
 			Name:        "become-user",
 			Usage:       "privilege escalation user to use",

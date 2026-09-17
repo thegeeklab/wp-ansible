@@ -39,6 +39,12 @@ properties:
     defaultValue: false
     required: false
 
+  - name: environment
+    description: |
+      Plugin environment variables.
+    type: dict
+    required: false
+
   - name: extra_vars
     description: |
       Set additional variables as `key=value`.
