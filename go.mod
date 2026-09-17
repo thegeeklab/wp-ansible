@@ -5,7 +5,7 @@ go 1.27.1
 require (
 	github.com/rs/zerolog v1.35.1
 	github.com/stretchr/testify v1.12.1
-	github.com/thegeeklab/wp-plugin-go/v6 v6.3.0
+	github.com/thegeeklab/wp-plugin-go/v6 v6.4.0
 	github.com/urfave/cli/v3 v3.11.0
 )
 
