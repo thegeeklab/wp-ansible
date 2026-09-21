@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v7/exec"
 )
 
 const (

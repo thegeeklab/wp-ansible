@@ -2,9 +2,10 @@ package plugin
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/thegeeklab/wp-ansible/ansible"
-	plugin_base "github.com/thegeeklab/wp-plugin-go/v6/plugin"
+	plugin_base "github.com/thegeeklab/wp-plugin-go/v7/plugin"
 	"github.com/urfave/cli/v3"
 )
 
@@ -30,9 +31,12 @@ func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 	}
 
 	options := plugin_base.Options{
-		Name:                "wp-ansible",
-		Description:         "Manage infrastructure with Ansible",
-		Flags:               Flags(p.Settings, plugin_base.FlagsPluginCategory),
+		Name:        "wp-ansible",
+		Description: "Manage infrastructure with Ansible",
+		Flags: slices.Concat(
+			plugin_base.LoggingFlags(plugin_base.FlagsPluginCategory),
+			Flags(p.Settings, plugin_base.FlagsPluginCategory),
+		),
 		Execute:             p.run,
 		HideWoodpeckerFlags: true,
 	}

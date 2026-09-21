@@ -10,13 +10,14 @@ import (
 	"flag"
 	"log"
 	"os"
-	"strings"
 	"text/template"
 
 	"github.com/thegeeklab/wp-ansible/plugin"
-	plugin_docs "github.com/thegeeklab/wp-plugin-go/v6/docs"
-	plugin_template "github.com/thegeeklab/wp-plugin-go/v6/template"
+	plugin_docs "github.com/thegeeklab/wp-plugin-go/v7/docs"
+	plugin_template "github.com/thegeeklab/wp-plugin-go/v7/template"
 )
+
+const yamlDescriptionIndent = "      "
 
 func main() {
 	outputFile := flag.String("output", "", "Output file path")
@@ -30,11 +31,11 @@ func main() {
 
 	p := plugin.New(nil)
 	templateData := plugin_docs.GetTemplateDataWithSource(p.App, *sourceFile)
-	longDescs := plugin_docs.LongDescriptionsFor(*sourceFile)
+	descriptions := plugin_docs.LongDescriptionsFor(*sourceFile, defaultMatchers()...)
 
 	funcs := plugin_template.LoadFuncMap()
-	funcs["longDesc"] = longDescFunc(longDescs)
-	funcs["yamlDesc"] = yamlDesc
+	funcs["longDesc"] = plugin_docs.LongDescriptionFunc(descriptions, plugin_docs.ShortDescriptionFallback)
+	funcs["yamlLiteral"] = yamlLiteral
 
 	docTemplate, err := template.New("docs").Funcs(funcs).Parse(docsTemplate)
 	if err != nil {
@@ -51,6 +52,23 @@ func main() {
 	}
 }
 
+// defaultMatchers returns the flag-type matchers used to extract long
+// descriptions. The wp-plugin-go custom map flag types are included in
+// addition to the urfave core flag types.
+func defaultMatchers() []plugin_docs.FlagTypeMatcher {
+	return []plugin_docs.FlagTypeMatcher{
+		plugin_docs.DefaultFlagTypeMatcher,
+		plugin_docs.SelectorMatcher("plugin_cli", "StringMapFlag", "DeepStringMapFlag"),
+	}
+}
+
+// yamlLiteral renders a LongDescription as the body of a YAML literal block
+// scalar at the indent depth that matches the "description: |" line in
+// docsTemplate.
+func yamlLiteral(d *plugin_docs.LongDescription) string {
+	return plugin_docs.LongDescriptionYAMLBlock(d, yamlDescriptionIndent)
+}
+
 const docsTemplate = `---
 {{- if .GlobalArgs }}
 properties:
@@ -58,7 +76,7 @@ properties:
   - name: {{ $v.Name }}
     {{- with longDesc $v }}
     description: |
-      {{ . | ToSentence | yamlDesc }}
+{{ yamlLiteral . }}
     {{- end }}
     {{- with $v.Type }}
     type: {{ . }}
@@ -70,23 +88,3 @@ properties:
 {{ end -}}
 {{ end -}}
 `
-
-func yamlDesc(s string) string {
-	if !strings.Contains(s, "\n") {
-		return s
-	}
-
-	indented := strings.ReplaceAll(s, "\n", "\n      ")
-
-	return "\n      " + indented
-}
-
-func longDescFunc(longDescs map[string]string) func(*plugin_docs.PluginArg) string {
-	return func(arg *plugin_docs.PluginArg) string {
-		if d, ok := longDescs[arg.Name]; ok && d != "" {
-			return d
-		}
-
-		return arg.Description
-	}
-}
