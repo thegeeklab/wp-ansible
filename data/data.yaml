@@ -34,15 +34,10 @@ properties:
 
   - name: diff
     description: |
-      Show the differences. Be careful when using it in public CI environments as it can print secrets.
+      Show the differences. Be careful when using it in public CI
+      environments as it can print secrets.
     type: bool
     defaultValue: false
-    required: false
-
-  - name: environment
-    description: |
-      Plugin environment variables.
-    type: dict
     required: false
 
   - name: extra_vars
@@ -76,13 +71,6 @@ properties:
     description: |
       Path to galaxy requirements file.
     type: string
-    required: false
-
-  - name: insecure_skip_verify
-    description: |
-      Skip SSL verification.
-    type: bool
-    defaultValue: false
     required: false
 
   - name: inventory
