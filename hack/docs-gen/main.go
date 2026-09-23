@@ -58,7 +58,6 @@ func main() {
 func defaultMatchers() []plugin_docs.FlagTypeMatcher {
 	return []plugin_docs.FlagTypeMatcher{
 		plugin_docs.DefaultFlagTypeMatcher,
-		plugin_docs.SelectorMatcher("plugin_cli", "StringMapFlag", "DeepStringMapFlag"),
 	}
 }
 
