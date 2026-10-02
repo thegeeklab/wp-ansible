@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v7/exec"
-	plugin_file "github.com/thegeeklab/wp-plugin-go/v7/file"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v8/exec"
+	plugin_file "github.com/thegeeklab/wp-plugin-go/v8/file"
 )
 
 func (p *Plugin) run(_ context.Context) error {
