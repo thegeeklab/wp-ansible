@@ -20,6 +20,7 @@ const (
 	ansiblePlaybookBin = "/usr/local/bin/ansible-playbook"
 )
 
+// ErrAnsiblePlaybookNotFound is returned when the configured playbook globs match no files.
 var ErrAnsiblePlaybookNotFound = errors.New("no playbook found")
 
 type Ansible struct {
